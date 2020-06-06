@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
+title:  "记socket-chat的开发历程"
 date:   2020-06-06 17:10:00 +0800
 tags:
   - rust
@@ -11,7 +11,7 @@ categories:
 ---
 # 记socket-chat的开发历程
 >socket-chat 一款极其简陋的socket聊天工具
-###为什么要写
+### 为什么要写
 计网实验，要求实现一个socket通信。我想着java语法臃肿，调api、复制代码也没有什么乐趣可言，正好自己准备用rust完成计网课设`p2p-chat`，那么先用rust实现一个socket通信练练手吧。~~于是就这么掉入坑里。~~
 
 ### 遇到了什么坑呢
