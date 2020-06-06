@@ -6,11 +6,11 @@
 # 'jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-title: Zhaxzhax Blog
+title: Zhaxzhax 的博客
 author: Zhaxzhax
 description: > # this means to ignore newlines until "baseurl:"
-  This theme is disigned based on Mailbox Blog, and licensed under MIT.
-  This theme is also default theme for new site created by Jekyll Writer.
+  该主题基于 Mailbox Blog, 并采用 MIT 协议开源。
+  该主题同时也是基于Jekyll Writer创建的网站的默认主题。
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://blog.zhaxzhax.cn" # the base hostname & protocol for your site
 permalink: /:year/:month/:day/:title/
