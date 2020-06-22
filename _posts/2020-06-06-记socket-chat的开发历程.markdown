@@ -9,7 +9,6 @@ categories:
   - Rust
   - Network
 ---
-# 记socket-chat的开发历程
 
 >socket-chat 一款极其简陋的socket聊天工具
 
