@@ -1,0 +1,76 @@
+---
+layout: post
+title:  "Dragonfly开发中的一些注意点"
+date:   2020-07-20 22:10:00 +0800
+tags:
+  - dragonfly
+  - golang
+categories:
+  - Dragonfly
+  - GoLang
+---
+
+> 参加了阿里的ASOC，开源项目选择为Dragonfly，遇到了一些问题，在这里记录一下
+
+### 换行符问题
+windows下的bash脚本为`\r\n`换行，`dos`格式。而linux或mac系统下为`unix`格式。在我们通过git拉取文件时，会自动将换行格式调整为`dos`格式，导致我在`wsl`下调用`makefile`时提示错误。同时转换为`dos`格式后，提交`commit`也会污染源代码库。
+这里是一些有关的命令
+```
+    #提交时转换为LF，检出时转换为CRLF
+    git config --global core.autocrlf true
+    
+    #提交时转换为LF，检出时不转换
+    git config --global core.autocrlf input
+    
+    #提交检出均不转换
+    git config --global core.autocrlf false
+    
+    #拒绝提交包含混合换行符的文件
+    git config --global core.safecrlf true
+    
+    #允许提交包含混合换行符的文件
+    git config --global core.safecrlf false
+    
+    #提交包含混合换行符的文件时给出警告
+    git config --global core.safecrlf warn
+	
+	#设置行结束符的类型为lf
+    git config --global core.eol lf
+
+	#设置行结束符的类型为crlf
+	git config --global core.eol crlf
+	
+	#设置行结束符的类型为native, native是指平台默认的行结束符。默认的类型是native
+	git config --global core.eol native
+```
+在这里我选择`git config --global core.autocrlf input`以及`git config --global core.safecrlf true`来保证拉取到的代码能在`wsl`环境下运行。
+
+### go proxy 问题
+在运行go程序时，出现连接断开，无法拉取到所需的pkg。这种情况一般是`go proxy`设置问题。
++ 设置GOPROXY代理：
+```
+go env -w GOPROXY=https://goproxy.cn,direct
+```
++ 设置GOPRIVATE来跳过私有库，比如常用的Gitlab或Gitee，中间使用逗号分隔：
+```
+go env -w GOPRIVATE=*.gitlab.com,*.gitee.com
+```
++ 如果在运行go mod vendor时，提示Get https://sum.golang.org/lookup/xxxxxx: dial tcp 216.58.200.49:443: i/o timeout，则是因为Go 1.13设置了默认的GOSUMDB=sum.golang.org，这个网站是被墙了的，用于验证包的有效性，可以通过如下命令关闭：
+```
+go env -w GOSUMDB=off
+```
++ 可以设置 GOSUMDB="sum.golang.google.cn"， 这个是专门为国内提供的sum 验证服务：
+```
+go env -w GOSUMDB="sum.golang.google.cn"
+```
++ -w 标记 要求一个或多个形式为 NAME=VALUE 的参数， 并且覆盖默认的设置
+
+
+### api生成
+api通过`swagger`生成
+### 命令行参数
+命令行定制程序采用`cobra`生成
+### 日志
+日志采用`logrus`
+### makefile
+该项目的`makefile`配合`hack`文件夹下的脚本可以实现项目本地编译，项目编译到docker，项目测试，项目生成文档，项目安装，项目卸载等多种功能。目测可以通过该`makefile`省去很多命令行操作。
