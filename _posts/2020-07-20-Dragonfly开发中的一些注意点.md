@@ -98,4 +98,28 @@ api版本混杂，存在0.3版本与1.0版本。另外部分1.0版本api在文�
 还没做
 # 我的中期方案设计
 ### 一些思路
-现在来看初步的方案不太行，还是对带宽控制理解的不太透彻。其实只要控制上行带宽就行了。我目前的想法是调整`totalLimit`来控制一个主机总的上行带宽。但由于一个主机会有多个`server`，而多个`server`的带宽改变会不会影响正在下载的任务呢？我还不知道，慢慢看吧。
++ ~~现在来看初步的方案不太行，还是对带宽控制理解的不太透彻。其实只要控制上行带宽就行了。我目前的想法是调整`totalLimit`来控制一个主机总的上行带宽。但由于一个主机会有多个`server`，而多个`server`的带宽改变会不会影响正在下载的任务呢？我还不知道，慢慢看吧。
+事实上一个dfget下载任务，就会建立一个server。而这个server可以同时服务这个文件任意`piece`的下载。也就是是说，一个主机上有多个server，一个server有多个下载任务。如果我们给一个server提供可用带宽的90%，那么下一个server获得的可能就是原先可用带宽的10%的90%。但如果保证通过server平均分配带宽，又会导致task较多的server带宽拥堵，task少的server带宽浪费。我的计划是每个server存储自己的task数量，并进行动态带宽的按比例分配。~~
+错了，每个host只有一个server，并且有时候开，有时候关。
++ DynamicRate 数据Race问题
++ 算法无法控制 totalLimiter问题
+### 设计与实现方案
+#### cli的添加
+`--dynamic`开启动态带宽功能
+#### api的添加
+添加了两个api，用于peerserver向supernode传递带宽更新信息
++ `/api/v1/peer/{id}/peerState/{dynamicRate}` 1.0版本的api
++ `/peer/dynamicrate` 0.3版本的api **(0.3版本的api需要修改，传task数组即可，调用多次开销太大)**
+#### 字段的添加
++ 对于`PeerState`添加了`DynamicRate`属性
+#### 具体的实现逻辑
++ `host_bandwidth_listener`监听带宽，将可用带宽的百分之九十设置为`totalLimit`，并作为`dynamicRate`传输至supernode
++ supernode根据`dynamicRate`以及`ProducerLoad`对`peer`进行优先级排序，调度算法将调度优先级更高的`peer`
+#### 带宽监听
+<!-- ~~+ nethogs
+> yum install nethogs
+
+> sudo apt install nethogs ~~ -->
++ cat /proc/net/dev 计算总带宽
++ 增加 maxBandwidth 协程 用于更新最大带宽
++ 固定带宽通过 gopacket抓包分析
