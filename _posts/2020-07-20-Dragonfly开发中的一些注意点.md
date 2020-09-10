@@ -11,6 +11,7 @@ categories:
 ---
 > 参加了阿里的ASOC，开源项目选择为Dragonfly，遇到了一些问题，在这里记录一下
 
+# 一些配置
 ### 换行符问题
 windows下的bash脚本为`\r\n`换行，`dos`格式。而linux或mac系统下为`unix`格式。在我们通过git拉取文件时，会自动将换行格式调整为`dos`格式，导致我在`wsl`下调用`makefile`时提示错误。同时转换为`dos`格式后，提交`commit`也会污染源代码库。
 这里是一些有关的命令
