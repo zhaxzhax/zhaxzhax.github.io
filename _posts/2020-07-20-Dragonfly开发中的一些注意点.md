@@ -123,3 +123,8 @@ api版本混杂，存在0.3版本与1.0版本。另外部分1.0版本api在文�
 + cat /proc/net/dev 计算总带宽
 + 增加 maxBandwidth 协程 用于更新最大带宽
 + 固定带宽通过 gopacket抓包分析
+#### 带宽监听修改
++ 
++ api修改，减少请求次数
++ 去除对gopacket依赖，粗略计算带宽
++ 通过配置项配置最大带宽dynamicMaxRate
